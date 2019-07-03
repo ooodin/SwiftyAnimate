@@ -43,7 +43,7 @@ open class Animate {
      - returns: An animation instance.
      
      */
-    convenience public init(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) {
+    convenience public init(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) {
         self.init(animation: StandardAnimation(duration: duration, delay: delay, options: options, animationBlock: animationBlock))
     }
     
@@ -68,7 +68,7 @@ open class Animate {
      
      - returns: An animation instance.
      */
-    convenience public init(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) {
+    convenience public init(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) {
         self.init(animation: SpringAnimation(duration: duration, delay: delay, damping: springDamping, velocity: initialVelocity, options: options, animationBlock: animationBlock))
     }
     
@@ -96,7 +96,7 @@ open class Animate {
      
      - returns: An animation instance.
      */
-    convenience public init(keyframes: [Keyframe], options: UIViewKeyframeAnimationOptions = []) {
+    convenience public init(keyframes: [Keyframe], options: UIView.KeyframeAnimationOptions = []) {
         self.init(animation: KeyframeAnimation(keyframes: keyframes, options: options))
     }
     
@@ -140,7 +140,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func then(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
+    open func then(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
         return then(animation: StandardAnimation(duration: duration, delay: delay, options: options, animationBlock: animationBlock))
     }
     
@@ -168,7 +168,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func then(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
+    open func then(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
         return then(animation: SpringAnimation(duration: duration, delay: delay, damping: springDamping, velocity: initialVelocity, options: options, animationBlock: animationBlock))
     }
     
@@ -197,7 +197,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func then(keyframes: [Keyframe], options: UIViewKeyframeAnimationOptions = []) -> Animate {
+    open func then(keyframes: [Keyframe], options: UIView.KeyframeAnimationOptions = []) -> Animate {
         return then(animation: KeyframeAnimation(keyframes: keyframes, options: options))
     }
     
@@ -242,7 +242,11 @@ open class Animate {
      */
     open func then(animation: Animate) -> Animate {
         let animation = animation.copy
-        let operation = AnimateOperation.wait(timeout: nil) { resume in animation.perform { resume() } }
+        let operation = AnimateOperation.wait(timeout: nil) {
+            resume in animation.perform {
+                resume()
+            }
+        }
         operations.enqueue(data: [operation])
         return self
     }
@@ -271,7 +275,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func and(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
+    open func and(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
         return and(animation: StandardAnimation(duration: duration, delay: delay, options: options, animationBlock: animationBlock))
     }
     
@@ -298,7 +302,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func and(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
+    open func and(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) -> Animate {
         return and(animation: SpringAnimation(duration: duration, delay: delay, damping: springDamping, velocity: initialVelocity, options: options, animationBlock: animationBlock))
     }
     
@@ -329,7 +333,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func and(keyframes: [Keyframe], options: UIViewKeyframeAnimationOptions = []) -> Animate {
+    open func and(keyframes: [Keyframe], options: UIView.KeyframeAnimationOptions = []) -> Animate {
         return and(animation: KeyframeAnimation(keyframes: keyframes, options: options))
     }
     
@@ -384,7 +388,11 @@ open class Animate {
     open func and(animation: Animate) -> Animate {
         
         let animation = animation.copy
-        let operation = AnimateOperation.wait(timeout: nil) { resume in animation.perform { resume() } }
+        let operation = AnimateOperation.wait(timeout: nil) { resume in
+            animation.perform {
+                resume()
+            }
+        }
         
         switch operations.last {
         case .some:
@@ -491,7 +499,7 @@ open class Animate {
      
      - parameter completion: Called after the final animation completes.
      */
-    open func perform(completion: @escaping (()->Void) = {_ in}) {
+    open func perform(completion: @escaping (()->Void) = {}) {
         
         guard let operationSet = operations.dequeue() else { return completion() }
         
@@ -549,7 +557,7 @@ open class Animate {
      - parameter options: Takes a set of UIViewAnimationOptions. Default is none.
      - parameter animationBlock: `Animation` callback to perform over the duration passed in.
      */
-    open func finish(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) {
+    open func finish(duration: TimeInterval, delay: TimeInterval = 0.0, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) {
         _ = then(duration: duration, delay: delay, options: options, animationBlock: animationBlock)
         perform()
     }
@@ -574,7 +582,7 @@ open class Animate {
      - parameter options: Takes a set of UIViewAnimationOptions. Default is an empty array.
      - parameter animationBlock: `Animation` callback to perform over the duration passed in.
      */
-    open func finish(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIViewAnimationOptions = [], animationBlock: @escaping AnimationBlock) {
+    open func finish(duration: TimeInterval, delay: TimeInterval = 0.0, springDamping: CGFloat, initialVelocity: CGFloat, options: UIView.AnimationOptions = [], animationBlock: @escaping AnimationBlock) {
         _ = then(duration: duration, delay: delay, springDamping: springDamping, initialVelocity: initialVelocity, options: options, animationBlock: animationBlock)
         perform()
     }
@@ -603,7 +611,7 @@ open class Animate {
      
      - returns: The current animation instance.
      */
-    open func finish(keyframes: [Keyframe], options: UIViewKeyframeAnimationOptions = []) {
+    open func finish(keyframes: [Keyframe], options: UIView.KeyframeAnimationOptions = []) {
         _ = then(keyframes: keyframes, options: options)
         perform()
     }
